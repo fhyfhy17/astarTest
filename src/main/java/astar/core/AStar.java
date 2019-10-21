@@ -22,7 +22,7 @@ public class AStar {
 
 
     private Grid grid;
-    private Node endNode;
+    private Node targetNode;
     private Node startNode;
 
     private Lock lock = new ReentrantLock();
@@ -45,7 +45,9 @@ public class AStar {
     public LinkedList<Node> findPath(Node startNode, Node targetNode) {
         try {
             this.startNode = startNode;
-            this.endNode = targetNode;
+            this.targetNode = targetNode;
+            this.openList.clear();
+            this.closedList.clear();
             lock.lock();
             return search(startNode, targetNode);
         } finally {
