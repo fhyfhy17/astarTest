@@ -1,23 +1,18 @@
 package astar;
 
 import astar.core.Grid;
+import astar.core.Node;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import astar.core.Node;
+import java.util.*;
 
 @Slf4j
 public class TestMap {
@@ -30,18 +25,17 @@ public class TestMap {
 
     public TestMap() {
 
-        try{
+        try {
             floorImage = ImageIO.read(Objects.requireNonNull(this.getClass().getClassLoader().getResource("floor.png")));
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try{
+        try {
             wallImage = ImageIO.read(Objects.requireNonNull(this.getClass().getClassLoader().getResource("wall.png")));
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
     }
@@ -95,7 +89,7 @@ public class TestMap {
 
 
     public void draw(Graphics g) {
-        grid.iter(g,floorImage,wallImage);
+        grid.iter(g, floorImage, wallImage);
     }
 
 }

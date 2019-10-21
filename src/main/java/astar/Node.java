@@ -24,7 +24,6 @@ public class Node implements Comparable<Node> {
 
     /**
      * 以注入坐标点方式初始化Node
-     *
      */
     public Node(int x, int y) {
         this.x = x;
