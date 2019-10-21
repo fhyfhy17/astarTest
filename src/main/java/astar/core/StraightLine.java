@@ -2,7 +2,7 @@ package astar.core;
 
 /**
  * Created by g on 2016/6/7.
- *
+ * <p>
  * y = ax + b;
  */
 public class StraightLine {
@@ -44,16 +44,16 @@ public class StraightLine {
     private int getFunId() {
         int type = this.forAxis;
 
-        if(point1.getX() == point2.getX()) {
-            if(type == 0) {
+        if (point1.getX() == point2.getX()) {
+            if (type == 0) {
                 return 0;
-            } else if(type == 1) {
+            } else if (type == 1) {
                 return 1;
             }
-        } else if(point1.getY() == point2.getY()) {
-            if(type == 0) {
+        } else if (point1.getY() == point2.getY()) {
+            if (type == 0) {
                 return 2;
-            } else if(type == 1) {
+            } else if (type == 1) {
                 return 0;
             }
         }
@@ -61,9 +61,9 @@ public class StraightLine {
         a = (point1.getY() - point2.getY()) / (point1.getX() - point2.getX());
         b = point1.getY() - a * point1.getX();
 
-        if(type == 0)
+        if (type == 0)
             return 3;
-        else if(type == 1)
+        else if (type == 1)
             return 4;
         return 0;
     }

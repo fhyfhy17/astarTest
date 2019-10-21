@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileUtil
-{
+public class FileUtil {
 
     public static List<String> getFileNames(String filePath, String filter) {
         File root = new File(filePath);
@@ -25,7 +24,7 @@ public class FileUtil
         }
         return filelist;
     }
-    
+
     public static List<File> getFiles(String filePath, String filter) {
         File root = new File(filePath);
         File[] files = root.listFiles(pathname -> {

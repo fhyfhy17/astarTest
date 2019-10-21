@@ -14,18 +14,18 @@ public class LittleHeap {
     //构造过程
     private void adjust(int pIndex, int len) {
         Node tmp = null;
-        try{
+        try {
             tmp = heap.get(pIndex);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         int leftChild = 2 * pIndex + 1;
 
-        while(leftChild < len) {
-            if(leftChild + 1 < len && heap.get(leftChild).getF() > heap.get(leftChild + 1).getF())
+        while (leftChild < len) {
+            if (leftChild + 1 < len && heap.get(leftChild).getF() > heap.get(leftChild + 1).getF())
                 leftChild++;
 
-            if(heap.get(pIndex).getF() > heap.get(leftChild).getF()) {
+            if (heap.get(pIndex).getF() > heap.get(leftChild).getF()) {
                 heap.set(pIndex, heap.get(leftChild));
                 pIndex = leftChild;
                 leftChild = 2 * pIndex + 1;
@@ -40,7 +40,7 @@ public class LittleHeap {
     private void swap() {
         List<Node> _heap = heap;
         int len = _heap.size();
-        if(len <= 0)
+        if (len <= 0)
             return;
 
         for (int i = (len - 1) / 2; i >= 0; --i) {
@@ -55,6 +55,7 @@ public class LittleHeap {
 
     /**
      * 取出堆顶F值最小元素
+     *
      * @return
      */
     public Node poll() {
