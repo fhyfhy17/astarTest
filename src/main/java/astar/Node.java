@@ -1,5 +1,7 @@
 package astar;
 
+import astar.core.AStar;
+
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -26,6 +28,14 @@ public class Node implements Comparable<Node> {
      * 以注入坐标点方式初始化Node
      */
     public Node(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * 以注入坐标点方式初始化Node
+     */
+    public Node(int index, int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -104,6 +114,17 @@ public class Node implements Comparable<Node> {
         limit.add(new Node(x - 1, y - 1));
 
         return limit;
+    }
+
+    /**
+     * 判断是否平行 平行返回true
+     */
+    public boolean isParallel(float height) {
+        //自己的高度高于节点高度是允许的
+        if (height >= this.py) {
+            return true;
+        }
+        return Math.abs(this.py - height) < AStar.ParallelRange;
     }
 
     public int getCostFromStart() {

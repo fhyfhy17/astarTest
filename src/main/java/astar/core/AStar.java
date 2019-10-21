@@ -1,8 +1,10 @@
 package astar.core;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Stack;
+import astar.Node;
+
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,90 +14,41 @@ import java.util.concurrent.locks.ReentrantLock;
 public class AStar {
 
     public static final float ParallelRange = 2.0f;
+    private AtomicInteger count = new AtomicInteger(0);
 
-    private BinaryHeap<Node> open;
-    private Stack<Node> closed;
-    private Stack<Node> path;
+    private PriorityQueue<Node> openList;
+
+    // 已完成路径的list
+    private LinkedList<Node> closedList;
+
+
     private Grid grid;
     private Node endNode;
     private Node startNode;
-    private float straightCost = 1.0f;
-    private float diagCost = (float) (Math.sqrt(2));
-    private boolean retractable = false;
-    private Heuristic heuristic;
-
-    private Comparator<Node> comparator;
 
     private Lock lock = new ReentrantLock();
 
-    public AStar(Grid grid, boolean retractable) {
-        this(Heuristic.MANHATTAN, true);
+    /**
+     * 构造方法
+     */
+    public AStar(Grid grid) {
         this.grid = grid;
+        openList = new PriorityQueue<>(512, Node::compareTo);
+        closedList = new LinkedList<>();
     }
 
-    /**
-     * 构造方法
-     *
-     * @param retractable 以死角点为寻路终点时，是否启用以死角点最近的可行点为路径终点
-     * @param heuristic   启发函数，为Heuristic类的枚举常量
-     */
-    public AStar(Heuristic heuristic, boolean retractable) {
-        this.heuristic = heuristic;
-        this.retractable = retractable;
-        // node1小于、等于或大于node2，分别返回负整数、零或正整数
-        comparator = (node1, node2) -> {
-            if (node1.getF() < node2.getF()) {
-                return 1;
-            } else if (node1.getF() > node2.getF()) {
-                return -1;
-            }
-            return 0;
-        };
-    }
-
-    /**
-     * 构造方法
-     *
-     * @param heuristic 路径代价分析函数
-     */
-    public AStar(Heuristic heuristic) {
-        this(heuristic, true);
-    }
-
-    /**
-     * 构造方法 默认为对角线启发函数
-     */
-    public AStar() {
-        this(Heuristic.DIAGONAL);
-    }
-
-    /**
-     * 启发函数计算
-     *
-     * @param node
-     * @return
-     */
-    private float heuristic(Node node) {
-        return heuristic.function(node, endNode, straightCost);
-    }
 
     /**
      * 找寻路径
      *
-     * @param grid 网格对象
      * @return true为找到了路径，调用getPath获取路径节点列表
      */
-    public boolean findPath(Grid grid) {
+    public LinkedList<Node> findPath(Node startNode, Node targetNode) {
         try {
+            this.startNode = startNode;
+            this.endNode = targetNode;
             lock.lock();
-            this.grid = grid;
-            this.open = new BinaryHeap(comparator);
-            this.closed = new Stack<>();
-            this.startNode.setG(0);
-            this.startNode.setH(heuristic(startNode));
-            this.startNode.setF(startNode.getG() + startNode.getH());
-            boolean result = search();
-            return result;
+            return search(startNode, targetNode);
         } finally {
             lock.unlock();
         }
@@ -106,199 +59,95 @@ public class AStar {
      *
      * @return true寻路成功
      */
-    private boolean search() {
-        Node node = startNode;
-        while (node != endNode) {
-            int startX = Math.max(0, node.getX() - 1);
-            int endX = Math.min(grid.getNumCols() - 1, node.getX() + 1);
-            int startY = Math.max(0, node.getY() - 1);
-            int endY = Math.min(grid.getNumRows() - 1, node.getY() + 1);
+    private LinkedList<Node> search(Node startNode, Node targetNode) {
 
-            // 围绕node的待测试节点
-            for (int i = startX; i <= endX; i++) {
-                for (int j = startY; j <= endY; j++) {
-                    Node test = grid.getNode(i, j);
-                    if (test == node) {
-                        continue;
-                    }
-                    Node vnode = grid.getNode(node.getX(), test.getY());
-                    Node hnode = grid.getNode(test.getX(), node.getY());
-                    if (retractable) {
-                        // if (test.isWalkable() == false || test.isTankOccupy() || !isDiagonalWalkable(node, test)) {
-                        if (!test.isWalkable()) { // TODO
-                            // 设其代价为超级大的一个值
-                            test.setCostMultiplier(1000);
-                        } else {
-                            test.setCostMultiplier(1);
-                        }
-                    } else {
-                        if (!test.isWalkable() || test.isTankOccupy() || !vnode.isWalkable()
-                                || vnode.isTankOccupy() || !hnode.isWalkable() || hnode.isTankOccupy()) {
-                            continue;
-                        }
-                    }
-
-                    // 直线成本（三角形，设边为1，其值为边长）
-                    float cost = straightCost;
-                    if (!((node.getX() == test.getX()) || (node.getY() == test.getY()))) {
-                        // 斜线成本（三角形，设边为1，斜边三角函数的值约为2的平方根）
-                        cost = diagCost;
-                    }
-                    float g = node.getG() + cost * test.getCostMultiplier();
-                    float h = heuristic(test);
-                    float f = g + h;
-                    if (isOpen(test) || isClosed(test)) {
-                        if (test.getF() > f) {
-                            test.setF(f);
-                            test.setG(g);
-                            test.setH(h);
-                            test.setParent(node);
-                        }
-                    } else {
-                        test.setF(f);
-                        test.setG(g);
-                        test.setH(h);
-                        test.setParent(node);
-                        open.push(test);
+        // 设定起始节点参数
+        startNode.setCostFromStart(0);
+        startNode.setCostToTarget(startNode.getCost(targetNode));
+        startNode.parentNode = null;
+        // 加入运算等级序列
+        openList.offer(startNode);
+        // 当运算等级序列中存在数据时，循环处理寻径，直到levelList为空
+        while (!openList.isEmpty()) {
+            // 取出并删除最初的元素
+            Node firstNode = openList.poll();
+            // 判定是否和目标node坐标相等
+            if (firstNode.equals(targetNode)) {
+                // 是的话即可构建出整个行走路线图，运算完毕
+                return makePath(firstNode);
+            } else {
+                // 否则
+                // 加入已验证List
+                closedList.add(firstNode);
+                // 获得firstNode的移动区域
+                LinkedList<Node> _limit = firstNode.getLimit();
+                // 遍历
+                for (int i = 0; i < _limit.size(); i++) {
+                    // 获得相邻节点
+                    Node neighborNode = _limit.get(i);
+                    // 获得是否满足等级条件
+                    boolean isOpen = openList.contains(neighborNode);
+                    // 获得是否已行走
+                    boolean isClosed = closedList.contains(neighborNode);
+                    // 判断是否无法通行
+                    boolean canMove = canMove(neighborNode.getX(), neighborNode.getY());
+                    // 当三者判定皆非时
+                    if (!isOpen && !isClosed && canMove) {
+                        // 设定costFromStart
+                        neighborNode.setCostFromStart(firstNode.getCostFromStart() + 1);
+                        // 设定costToObject
+                        neighborNode.setCostToTarget(neighborNode.getCost(targetNode));
+                        // 改变neighborNode父节点
+                        neighborNode.parentNode = firstNode;
+                        // 加入level
+                        openList.offer(neighborNode);
                     }
                 }
             }
-            closed.push(node);
-            if (open.getSize() == 0) {
-                return false;
-            }
-            node = open.shift();
+
         }
-        buildPath();
-        return true;
+        closedList.clear();
+        // 当while无法运行时，将返回null
+        return null;
     }
 
-    /**
-     * 判断两个节点的对角线路线是否可走
-     *
-     * @return true可走
-     */
-    private boolean isDiagonalWalkable(Node node1, Node node2) {
-        Node nearByNode1 = grid.getNode(node1.getX(), node2.getY());
-        Node nearByNode2 = grid.getNode(node2.getX(), node1.getY());
-        return nearByNode1.isWalkable() && !nearByNode1.isTankOccupy() && nearByNode2.isWalkable()
-                && !nearByNode2.isTankOccupy();
-    }
 
     /**
-     * 移除list中从startIndex处开始的len个元素
+     * 判定是否为可通行区域
      *
-     * @param list       列表对象
-     * @param startIndex 开始删除位置
-     * @param len        删除的个数
+     * @param x x
+     * @param y y
+     * @return 能否移动
      */
-    private void removeListElement(List<Node> list, int startIndex, int len) {
-        int index = startIndex;
-        for (int j = 0; j < len; j++) {
-            list.remove(index++);
+    private boolean canMove(int x, int y) {
+        System.out.println(count.incrementAndGet());
+        if (x < 0 || y < 0) {
+            return false;
         }
-    }
-
-    /**
-     * 移除stack中从startIndex处和其后的所有元素
-     *
-     * @param stack      列表对象
-     * @param startIndex 移除元素的起始位置
-     */
-    private void removeStackElement(Stack<Node> stack, int startIndex) {
-        int endIndex = stack.size();
-        while (endIndex != startIndex) {
-            //stack.pop(); 不能用pop 会开始点的那些点去掉了，而保留了结束点
-            stack.remove(0);
-            endIndex--;
+        Node node = grid.getNode(x, y);
+        if (node == null) {
+            return false;
         }
+        return grid.getNode(x, y).isWalkable();
     }
 
     /**
-     * 构建路径
+     * 通过Node制造行走路径
+     *
+     * @param node 终点
+     * @return 经过路径
      */
-    private void buildPath() {
-        path = new Stack<>();
-        Node node = endNode;
-        path.push(node);
-        // 不包含起始节点
-        while (node != startNode) {
-            node = node.getParent();
-            path.push(node);
+    private LinkedList<Node> makePath(Node node) {
+        LinkedList<Node> path = new LinkedList<>();
+        // 当上级节点存在时
+        while (node.parentNode != null) {
+            // 在第一个元素处添加
+            path.addFirst(node);
+            // 将node赋值为parent node
+            node = node.parentNode;
         }
-        if (retractable) {
-            // 排除无法移动点
-            int len = path.size();
-            for (int i = 0; i < len; i++) {
-                //System.out.println("1 " + i + " node " + path.get(i).getX() + " " + path.get(i).getY() );
-                //System.out.println("path.get(i).isWalkable() " + path.get(i).isWalkable() );
-//				if( ignoreNode != null && ignoreNode.containsKey(path.get(i).getX()) && ignoreNode.get(path.get(i).getX()).contains(path.get(i).getY())){
-//					continue;
-//				}
-                if (!path.get(i).isWalkable()) {
-                    // removeListElement(path, i, len - i);
-                    removeStackElement(path, i);
-                    break;
-                } else if (len == 1 && !isDiagonalWalkable(startNode, endNode)) {
-                    // 由于之前排除了起始点，所以当路径中只有一个元素时候判断该元素与起始点是否是不可穿越关系，若是，则连最后这个元素也给他弹出来~
-                    path.remove(0);
-//				} else if (i < len - 1 && !isDiagonalWalkable(path.get(i), path.get(i + 1))) {
-//					// 判断后续节点间是否存在不可穿越点，若有，则把此点之后的元素全部拿下
-//					// removeListElement(path, i + 1, len - i - 1);
-//					removeStackElement(path, i + 1);
-//					break;
-                }
-            }
-        }
-    }
-
-    /**
-     * 判断节点是否在开放列表中
-     *
-     * @param node 带判断的节点
-     * @return true在开放列表中
-     */
-    private boolean isOpen(Node node) {
-        return open.toStack().contains(node);
-    }
-
-    /**
-     * 判断节点是否在关闭列表中
-     *
-     * @param node 待判断的节点
-     * @return true在关闭列表中
-     */
-    private boolean isClosed(Node node) {
-        return closed.contains(node);
-    }
-
-    /**
-     * 获取路径
-     *
-     * @return 寻到的路径
-     */
-    public Stack<Node> getPath() {
-        // path.add(grid.getStart());
+        // 在第一个元素处添加
+        path.addFirst(node);
         return path;
-    }
-
-    /**
-     * 获取已访问过得节点列表
-     *
-     * @return 已访问的节点列表
-     */
-    public Stack<Node> getVisited() {
-        Stack<Node> stack = new Stack<>();
-        stack.addAll(closed);
-        stack.addAll(open.toStack());
-        return stack;
-    }
-
-    public void setStartNode(Node startNode) {
-        this.startNode = startNode;
-    }
-
-    public void setEndNode(Node endNode) {
-        this.endNode = endNode;
     }
 }

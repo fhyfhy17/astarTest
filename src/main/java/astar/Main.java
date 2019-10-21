@@ -1,5 +1,7 @@
 package astar;
 
+import astar.core.AStar;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,7 +18,7 @@ public class Main extends Panel {
 
     private TestMap map;
 
-    private PathFinder astar;
+    private AStar astar;
 
     // 起始坐标1,1
     private static Point START_POS = new Point(24, 24);
@@ -38,10 +40,10 @@ public class Main extends Panel {
         graphics = screen.getGraphics();
         map = new TestMap();
 //        // 注入地图描述及障碍物描述
-        astar = new PathFinder(map.createGrid());
+        astar = new AStar(map.createGrid());
 //        // searchPath将获得两点间移动路径坐标的List集合
 //        // 在实际应用中，利用Thread分步处理List中坐标即可实现自动行走
-        path = astar.searchPath(START_POS, OBJECT_POS);
+        path = astar.findPath(new Node(START_POS.x, START_POS.y), new Node(OBJECT_POS.x, OBJECT_POS.y));
     }
 
     public void update(Graphics g) {
