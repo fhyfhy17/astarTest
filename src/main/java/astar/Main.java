@@ -19,10 +19,10 @@ public class Main extends Panel {
     private PathFinder astar;
 
     // 起始坐标1,1
-    private static Point START_POS = new Point(1, 1);
+    private static Point START_POS = new Point(24, 24);
 
     // 目的坐标10,13
-    private static Point OBJECT_POS = new Point(2, 2);
+    private static Point OBJECT_POS = new Point(55, 55);
 
     private Image screen;
 
