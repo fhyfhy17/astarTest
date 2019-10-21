@@ -62,9 +62,8 @@ public class Main extends Panel {
             graphics.setColor(Color.YELLOW);
             // 遍历坐标，并一一描绘
             for (Node node : path) {
-                Point pos = node._pos;
                 // 描绘边框
-                graphics.fillRect(pos.x * CS + 2, pos.y * CS + 2, CS - 4, CS - 4);
+                graphics.fillRect(node.getX() * CS + 2, node.getY() * CS + 2, CS - 4, CS - 4);
             }
         }
         g.drawImage(screen, 0, 0, this);

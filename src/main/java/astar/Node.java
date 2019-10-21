@@ -1,30 +1,34 @@
 package astar;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.Objects;
 
 
 public class Node implements Comparable<Node> {
-    // 坐标
-    public Point _pos;
-
-    // 开始地点数值
-    private int _costFromStart;
-
-    // 目标地点数值
-    private int _costToObject;
-
     // 父节点
-    public Node _parentNode;
+    public Node parentNode;
+    // 开始地点数值
+    private int costFromStart;
+    // 目标地点数值
+    private int costToTarget;
+    private int index;          //结点索引，先列后行
+    private int x, y;     //结点坐标
+
+    private float px;                //中心位置世界坐标X坐标
+    private float py;                //中心位置世界坐标高度
+    private float pz;                //中心位置世界坐标Z坐标（二维坐标中的Y轴）
+
+    private boolean walkable = true;        //是否为障碍物
+    private boolean tankOccupy = false;        //是否有坦克占据
+
 
     /**
      * 以注入坐标点方式初始化Node
      *
-     * @param _pos pos
      */
-    public Node(Point _pos) {
-        this._pos = _pos;
+    public Node(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -35,8 +39,8 @@ public class Node implements Comparable<Node> {
      */
     public int getCost(Node node) {
         // 获得坐标点间差值 公式：(x1, y1)-(x2, y2)
-        int m = node._pos.x - _pos.x;
-        int n = node._pos.y - _pos.y;
+        int m = node.x - x;
+        int n = node.y - y;
         // 取两节点间欧几理德距离（直线距离）做为估价值，用以获得成本
         return (int) Math.sqrt(m * m + n * n);
     }
@@ -44,7 +48,7 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(_pos, _costFromStart, _costToObject);
+        return Objects.hash(x, y, costFromStart, costToTarget);
     }
 
     @Override
@@ -56,15 +60,15 @@ public class Node implements Comparable<Node> {
             return false;
         }
         Node node = (Node) o;
-        return _pos.x == node._pos.x && _pos.y == node._pos.y ;
+        return x == node.x && y == node.y;
     }
 
     /**
      * 比较两点以获得最小成本对象
      */
     public int compareTo(Node node) {
-        int a1 = _costFromStart + _costToObject;
-        int a2 = node._costFromStart + node._costToObject;
+        int a1 = costFromStart + costToTarget;
+        int a2 = node.costFromStart + node.costToTarget;
         if (a1 < a2) {
             return -1;
         } else if (a1 == a2) {
@@ -81,43 +85,105 @@ public class Node implements Comparable<Node> {
      */
     public LinkedList<Node> getLimit() {
         LinkedList<Node> limit = new LinkedList<>();
-        int x = _pos.x;
-        int y = _pos.y;
+
         // 上下左右各点间移动区域(对于斜视地图，可以开启注释的偏移部分，此时将评估8个方位)
         // 上
-        limit.add(new Node(new Point(x, y - 1)));
+        limit.add(new Node(x, y - 1));
         // 右上
-        // limit.add(new Node(new Point(x+1, y-1)));
+        limit.add(new Node(x + 1, y - 1));
         // 右
-        limit.add(new Node(new Point(x + 1, y)));
+        limit.add(new Node(x + 1, y));
         // 右下
-        // limit.add(new Node(new Point(x+1, y+1)));
+        limit.add(new Node(x + 1, y + 1));
         // 下
-        limit.add(new Node(new Point(x, y + 1)));
+        limit.add(new Node(x, y + 1));
         // 左下
-        // limit.add(new Node(new Point(x-1, y+1)));
+        limit.add(new Node(x - 1, y + 1));
         // 左
-        limit.add(new Node(new Point(x - 1, y)));
+        limit.add(new Node(x - 1, y));
         // 左上
-        // limit.add(new Node(new Point(x-1, y-1)));
+        limit.add(new Node(x - 1, y - 1));
 
         return limit;
     }
 
-    public int get_costFromStart() {
-        return _costFromStart;
+    public int getCostFromStart() {
+        return costFromStart;
     }
 
-    public void set_costFromStart(int _costFromStart) {
-        this._costFromStart = _costFromStart;
+    public void setCostFromStart(int costFromStart) {
+        this.costFromStart = costFromStart;
     }
 
-    public int get_costToObject() {
-        return _costToObject;
+    public int getCostToTarget() {
+        return costToTarget;
     }
 
-    public void set_costToObject(int _costToObject) {
-        this._costToObject = _costToObject;
+    public void setCostToTarget(int costToTarget) {
+        this.costToTarget = costToTarget;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public float getPx() {
+        return px;
+    }
+
+    public void setPx(float px) {
+        this.px = px;
+    }
+
+    public float getPy() {
+        return py;
+    }
+
+    public void setPy(float py) {
+        this.py = py;
+    }
+
+    public float getPz() {
+        return pz;
+    }
+
+    public void setPz(float pz) {
+        this.pz = pz;
+    }
+
+    public boolean isWalkable() {
+        return walkable;
+    }
+
+    public void setWalkable(boolean walkable) {
+        this.walkable = walkable;
+    }
+
+    public boolean isTankOccupy() {
+        return tankOccupy;
+    }
+
+    public void setTankOccupy(boolean tankOccupy) {
+        this.tankOccupy = tankOccupy;
+    }
 }
