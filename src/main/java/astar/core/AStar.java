@@ -3,6 +3,7 @@ package astar.core;
 import astar.Node;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -57,7 +58,7 @@ public class AStar {
     /**
      * 寻路算法
      *
-     * @return true寻路成功
+     * @return 寻路列表
      */
     private LinkedList<Node> search(Node startNode, Node targetNode) {
 
@@ -76,11 +77,10 @@ public class AStar {
                 // 是的话即可构建出整个行走路线图，运算完毕
                 return makePath(firstNode);
             } else {
-                // 否则
-                // 加入已验证List
+                // 否则加入已验证List
                 closedList.add(firstNode);
                 // 获得firstNode的移动区域
-                LinkedList<Node> _limit = firstNode.getLimit();
+                List<Node> _limit = grid.getNearByNodes(firstNode.getX(), firstNode.getY());
                 // 遍历
                 for (int i = 0; i < _limit.size(); i++) {
                     // 获得相邻节点
@@ -130,6 +130,7 @@ public class AStar {
         }
         return grid.getNode(x, y).isWalkable();
     }
+
 
     /**
      * 通过Node制造行走路径

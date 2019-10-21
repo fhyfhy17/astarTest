@@ -2,7 +2,6 @@ package astar;
 
 import astar.core.AStar;
 
-import java.util.LinkedList;
 import java.util.Objects;
 
 
@@ -85,35 +84,6 @@ public class Node implements Comparable<Node> {
         } else {
             return 1;
         }
-    }
-
-    /**
-     * 获得上下左右各点间移动限制区域
-     *
-     * @return 四个临点
-     */
-    public LinkedList<Node> getLimit() {
-        LinkedList<Node> limit = new LinkedList<>();
-
-        // 上下左右各点间移动区域(对于斜视地图，可以开启注释的偏移部分，此时将评估8个方位)
-        // 上
-        limit.add(new Node(x, y - 1));
-        // 右上
-        limit.add(new Node(x + 1, y - 1));
-        // 右
-        limit.add(new Node(x + 1, y));
-        // 右下
-        limit.add(new Node(x + 1, y + 1));
-        // 下
-        limit.add(new Node(x, y + 1));
-        // 左下
-        limit.add(new Node(x - 1, y + 1));
-        // 左
-        limit.add(new Node(x - 1, y));
-        // 左上
-        limit.add(new Node(x - 1, y - 1));
-
-        return limit;
     }
 
     /**

@@ -67,21 +67,23 @@ public class Grid implements Cloneable {
     }
 
     /**
-     * 获取附近的四个节点
+     * 获取附近的八个节点
      *
-     * @param intX 网格坐标
-     * @param intY 网格坐标
+     * @param x 网格坐标
+     * @param y 网格坐标
      * @return
      */
-    public List<Node> getNearByNodes(int intX, int intY) {
+    public List<Node> getNearByNodes(int x, int y) {
         List<Node> result = new ArrayList<>();
 
-        this.buildNodes(getNode(intX, intY), result);
-        this.buildNodes(getNode(intX + 1, intY), result);
-        this.buildNodes(getNode(intX, intY + 1), result);
-        this.buildNodes(getNode(intX, intY - 1), result);
-        this.buildNodes(getNode(intX - 1, intY), result);
-
+        this.buildNodes(getNode(x, y - 1), result);
+        this.buildNodes(getNode(x + 1, y - 1), result);
+        this.buildNodes(getNode(x + 1, y), result);
+        this.buildNodes(getNode(x + 1, y + 1), result);
+        this.buildNodes(getNode(x, y + 1), result);
+        this.buildNodes(getNode(x - 1, y + 1), result);
+        this.buildNodes(getNode(x - 1, y), result);
+        this.buildNodes(getNode(x - 1, y - 1), result);
         return result;
     }
 
