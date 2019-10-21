@@ -1,4 +1,4 @@
-package astar;
+package astar.core;
 
 import lombok.Data;
 

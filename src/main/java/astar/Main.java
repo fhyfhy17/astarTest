@@ -1,6 +1,7 @@
 package astar;
 
 import astar.core.AStar;
+import astar.core.Node;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;

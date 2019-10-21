@@ -1,7 +1,5 @@
 package astar.core;
 
-import astar.Node;
-
 public enum NodeDirection {
 
     None(0),

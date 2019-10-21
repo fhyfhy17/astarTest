@@ -1,6 +1,9 @@
 package astar;
 
 import astar.core.Grid;
+import astar.core.GridTemplate;
+import astar.core.MapDataTemplate;
+import astar.core.Node;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 

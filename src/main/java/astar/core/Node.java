@@ -1,6 +1,4 @@
-package astar;
-
-import astar.core.AStar;
+package astar.core;
 
 import java.util.Objects;
 
