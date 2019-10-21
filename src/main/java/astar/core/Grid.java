@@ -45,8 +45,8 @@ public class Grid implements Cloneable {
      * @return
      */
     public Node getNodeByWoldPoint(float xPos, float zPos) {
-        int x = worldToGrildPosX(xPos);
-        int y = worldToGrildPosY(zPos);
+        int x = worldToGridPosX(xPos);
+        int y = worldToGridPosY(zPos);
 
         return this.getNode(x, y);
     }
@@ -59,8 +59,8 @@ public class Grid implements Cloneable {
      * @return
      */
     public List<Node> getNearByNodes(float xPos, float yPos) {
-        int intX = worldToGrildPosX(xPos);
-        int intY = worldToGrildPosY(yPos);
+        int intX = worldToGridPosX(xPos);
+        int intY = worldToGridPosY(yPos);
 
         return getNearByNodes(intX, intY);
     }
@@ -86,12 +86,11 @@ public class Grid implements Cloneable {
         return result;
     }
 
-    private List<Node> buildNodes(Node node, List<Node> returnList) {
+    private void buildNodes(Node node, List<Node> returnList) {
         if (node == null) {
-            return returnList;
+            return;
         }
         returnList.add(node);
-        return returnList;
     }
 
     /**
@@ -152,7 +151,7 @@ public class Grid implements Cloneable {
     /**
      * 世界坐标转换为格子坐标
      */
-    private int worldToGrildPosX(float worldposX) {
+    private int worldToGridPosX(float worldposX) {
         worldposX -= deviationX;
         if (worldposX < 0)
             worldposX = 0;
@@ -162,7 +161,7 @@ public class Grid implements Cloneable {
     /**
      * 世界坐标Y（三维Z）转换为格子坐标
      */
-    private int worldToGrildPosY(float worldposY) {
+    private int worldToGridPosY(float worldposY) {
         worldposY -= deviationZ;
         if (worldposY < 0)
             worldposY = 0;
@@ -180,12 +179,12 @@ public class Grid implements Cloneable {
      */
     public boolean hadBarrier(float starXPos, float starYPos, float endXPos, float endYPos) {
 
-        int startX = this.worldToGrildPosX(starXPos);
-        int startY = this.worldToGrildPosY(starYPos);
-        int endX = this.worldToGrildPosX(endXPos);
-        int endY = this.worldToGrildPosY(endYPos);
+        int startX = this.worldToGridPosX(starXPos);
+        int startY = this.worldToGridPosY(starYPos);
+        int endX = this.worldToGridPosX(endXPos);
+        int endY = this.worldToGridPosY(endYPos);
 
-        // 如果起点终点是同一个点那傻子都知道它们间是没有障碍物的
+        // 如果起点终点相同无障碍
         if (startX == endX && startY == endY) {
             return false;
         }

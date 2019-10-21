@@ -32,7 +32,7 @@ public class AStar {
      */
     public AStar(Grid grid) {
         this.grid = grid;
-        openList = new PriorityQueue<>(512, Node::compareTo);
+        openList = new PriorityQueue<>(256, Node::compareTo);
         closedList = new LinkedList<>();
     }
 
