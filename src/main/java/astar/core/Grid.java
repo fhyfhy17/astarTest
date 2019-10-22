@@ -76,13 +76,13 @@ public class Grid implements Cloneable {
         List<Node> result = new ArrayList<>();
 
         this.buildNodes(getNode(x, y - 1), result);
-        this.buildNodes(getNode(x + 1, y - 1), result);
+        //this.buildNodes(getNode(x + 1, y - 1), result);
         this.buildNodes(getNode(x + 1, y), result);
-        this.buildNodes(getNode(x + 1, y + 1), result);
+        //this.buildNodes(getNode(x + 1, y + 1), result);
         this.buildNodes(getNode(x, y + 1), result);
-        this.buildNodes(getNode(x - 1, y + 1), result);
+        //this.buildNodes(getNode(x - 1, y + 1), result);
         this.buildNodes(getNode(x - 1, y), result);
-        this.buildNodes(getNode(x - 1, y - 1), result);
+        //this.buildNodes(getNode(x - 1, y - 1), result);
         return result;
     }
 

@@ -73,15 +73,11 @@ public class Node implements Comparable<Node> {
      * 比较两点以获得最小成本对象
      */
     public int compareTo(Node node) {
-        int a1 = costFromStart + costToTarget;
-        int a2 = node.costFromStart + node.costToTarget;
-        if (a1 < a2) {
-            return -1;
-        } else if (a1 == a2) {
-            return 0;
-        } else {
-            return 1;
-        }
+        int a1 = costFromStart + (int)(costToTarget*2.1);
+        int a2 = node.costFromStart + (int)(node.costToTarget*2.1);
+        //int a1 = costFromStart ;
+        //int a2 = node.costFromStart ;
+        return Integer.compare(a1,a2);
     }
 
     /**

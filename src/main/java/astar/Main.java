@@ -22,7 +22,7 @@ public class Main extends Panel {
     private AStar astar;
 
     // 起始坐标1,1
-    private static Point START_POS = new Point(24, 24);
+    private static Point START_POS = new Point(24, 72);
 
     // 目的坐标10,13
     private static Point OBJECT_POS = new Point(55, 55);
@@ -68,6 +68,7 @@ public class Main extends Panel {
                 // 描绘边框
                 graphics.fillRect(node.getX() * CS + 2, node.getY() * CS + 2, CS - 4, CS - 4);
             }
+            System.out.println("一共 "+ path.size() +" 个点");
         }
         g.drawImage(screen, 0, 0, this);
     }
