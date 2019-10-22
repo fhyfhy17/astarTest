@@ -13,8 +13,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class TestMap {
@@ -93,5 +97,4 @@ public class TestMap {
     public void draw(Graphics g) {
         grid.iter(g, floorImage, wallImage);
     }
-
 }

@@ -1,6 +1,7 @@
 package astar;
 
 import astar.core.AStar;
+import astar.core.Grid;
 import astar.core.Node;
 
 import java.awt.*;
@@ -20,9 +21,11 @@ public class Main extends Panel {
     private TestMap map;
 
     private AStar astar;
+    
+    private Grid grid;
 
     // 起始坐标1,1
-    private static Point START_POS = new Point(24, 72);
+    private static Point START_POS = new Point(22, 73);
 
     // 目的坐标10,13
     private static Point OBJECT_POS = new Point(55, 55);
@@ -41,7 +44,9 @@ public class Main extends Panel {
         graphics = screen.getGraphics();
         map = new TestMap();
 //        // 注入地图描述及障碍物描述
-        astar = new AStar(map.createGrid());
+		grid=map.createGrid();
+		astar = new AStar(grid);
+  
 //        // searchPath将获得两点间移动路径坐标的List集合
 //        // 在实际应用中，利用Thread分步处理List中坐标即可实现自动行走
         path = astar.findPath(new Node(START_POS.x, START_POS.y), new Node(OBJECT_POS.x, OBJECT_POS.y));
@@ -59,8 +64,19 @@ public class Main extends Panel {
 
         graphics.setColor(Color.BLUE);
         graphics.fillRect(OBJECT_POS.x * CS, OBJECT_POS.y * CS, CS, CS);
-
-        // 绘制路径
+	
+        //三种求 两个点之前的线段经过了哪些格子的算法
+		
+        //这三种算法理论上都应该是可以的
+        
+		//List<Node> line=grid.bresenham(START_POS.x,START_POS.y,OBJECT_POS.x,OBJECT_POS.y);
+		List<Node> line=grid.supercover(START_POS.x,START_POS.y,OBJECT_POS.x,OBJECT_POS.y);
+		
+		//Node node1=grid.getNode(START_POS.x,START_POS.y);
+		//Node node2=grid.getNode(OBJECT_POS.x,OBJECT_POS.y);
+		//List<Node> line=grid.hadBarrier(node1.getPx(),node1.getPz(),node2.getPx(),node2.getPz());
+		
+		// 绘制路径
         if (path != null) {
             graphics.setColor(Color.YELLOW);
             // 遍历坐标，并一一描绘
