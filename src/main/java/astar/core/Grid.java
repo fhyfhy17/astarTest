@@ -336,7 +336,7 @@ public class Grid implements Cloneable {
     }
     
     //基于  bresenham 算法
-    public List<Node> bresenham(Grid grid, int x0, int y0, int x1, int y1) {
+    public List<Node> bresenham( int x0, int y0, int x1, int y1) {
         List<Node> line = new ArrayList<>();
         
         int dx = Math.abs(x1 - x0);
@@ -351,7 +351,7 @@ public class Grid implements Cloneable {
         int currentY = y0;
         
         while(true) {
-            line.add( grid.getNode(currentX,currentY));
+            line.add( getNode(currentX,currentY));
             
             if(currentX == x1 && currentY == y1) {
                 break;

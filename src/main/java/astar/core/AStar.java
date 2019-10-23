@@ -7,9 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by g on 2016/6/7.
- */
+
 public class AStar {
 
     public static final float ParallelRange = 2.0f;
